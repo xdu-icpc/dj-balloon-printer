@@ -54,7 +54,7 @@ impl DomJudgeRunner {
         use regex::Regex;
         let re = Regex::new(r"name=._csrf_token.*value=.(.*).>").unwrap();
         let cap = re.captures(&body);
-        let csrf = match cap.map(|x| x.get(1)).flatten() {
+        let csrf = match cap.and_then(|x| x.get(1)) {
             Some(csrf) => csrf,
             None => return Err(Error::CsrfError),
         };
