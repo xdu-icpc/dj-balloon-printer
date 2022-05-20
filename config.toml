@@ -17,6 +17,6 @@ in 2021-2022 Xidian University Programming Contest
 [domjudge]
 # The trailing "/" is necessary.
 url = "http://192.168.124.206/domjudge/"
-contest_id = 2
+contest_id = "demo"
 user = "balloonbot"
 password = "congratulate_grand_masters"

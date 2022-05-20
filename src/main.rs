@@ -49,7 +49,7 @@ impl From<Balloon> for BalloonOutput {
 #[derive(Deserialize)]
 struct DomJudge {
     url: String,
-    contest_id: usize,
+    contest_id: String,
     user: String,
     password: String,
 }
@@ -103,7 +103,7 @@ async fn main() {
 
     let mut serv = dj::DomJudgeRunner::new(
         Url::parse(&config.domjudge.url).unwrap(),
-        config.domjudge.contest_id,
+        &config.domjudge.contest_id,
         &config.domjudge.user,
         &config.domjudge.password,
     )

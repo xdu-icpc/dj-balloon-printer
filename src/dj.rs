@@ -17,8 +17,9 @@ struct DomjudgeBalloon {
 }
 
 impl DomJudgeRunner {
-    pub async fn new<S1, S2>(url: Url, cid: usize, user: S1, passwd: S2) -> Result<Self>
+    pub async fn new<S0, S1, S2>(url: Url, cid: S0, user: S1, passwd: S2) -> Result<Self>
     where
+        S0: AsRef<str>,
         S1: AsRef<str>,
         S2: AsRef<str>,
     {
@@ -71,7 +72,7 @@ impl DomJudgeRunner {
             .await
             .map_err(Error::HttpError)?;
 
-        let path = format!("api/v4/contests/{}/balloons", cid);
+        let path = format!("api/v4/contests/{}/balloons", cid.as_ref());
         // Use `unwrap` because path can't contain invalid bytes.
         let balloon_api = url.join(&path).unwrap();
         let balloon_jury_iface = url.join("jury/balloons/").unwrap();
