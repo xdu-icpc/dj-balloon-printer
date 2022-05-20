@@ -1,0 +1,25 @@
+name: Rust
+
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build on Ubuntu Latest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Build
+        run: cargo build --release
+      - name: Upload
+        uses: 'actions/upload-artifact@v3'
+        with:
+          name: artifact
+          path: |
+            target/release/dj-balloon-printer
