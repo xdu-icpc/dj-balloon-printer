@@ -1,0 +1,22 @@
+printer = "/dev/usb/lp0"
+
+# Adjust it for your printer.  Different printer may have different control
+# sequences.  Some printers may need extra trailing empty lines.
+format="""
+\u001b@Congratulation to {{team}}
+at \u001b\u0021\u0010\u001b\u000e{{location}}\u001b\u0021\u0000\u001b\u0014
+for \u001b\u0021\u0010\u001b\u000e{{problem}}\u001b\u0021\u0000\u001b\u0014
+(color: {{color}})
+{{awards}}
+in 2021-2022 Xidian University Programming Contest
+
+
+
+"""
+
+[domjudge]
+# The trailing "/" is necessary.
+url = "http://192.168.124.206/domjudge/"
+contest_id = 2
+user = "balloonbot"
+password = "congratulate_grand_masters"
