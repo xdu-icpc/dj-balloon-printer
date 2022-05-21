@@ -15,6 +15,7 @@ futures = "0.3.21"
 rustyline = "9.1.2"
 text_placeholder = { version = "0.4.0", features = ["struct_context"] }
 regex = "1.5"
+encoding_rs = "0.8.31"
 
 [dependencies.tokio]
 version = "1.10.0"

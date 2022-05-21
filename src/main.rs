@@ -58,6 +58,7 @@ struct DomJudge {
 struct Config {
     printer: String,
     format: String,
+    encoding: String,
     domjudge: DomJudge,
 }
 
@@ -100,6 +101,9 @@ async fn main() {
         panic!("cannot open the printer: {}", e);
     }
     let mut f = f.unwrap();
+
+    let enc =
+        encoding_rs::Encoding::for_label(config.encoding.as_bytes()).unwrap_or(encoding_rs::UTF_8);
 
     let mut serv = dj::DomJudgeRunner::new(
         Url::parse(&config.domjudge.url).unwrap(),
@@ -157,7 +161,8 @@ async fn main() {
             let tt = text_placeholder::Template::new(&config.format);
             let out = tt.fill_with_struct(&b).unwrap();
             use tokio::io::AsyncWriteExt;
-            f.write_all(out.as_bytes()).await.unwrap();
+            let (encoded_out, _, _) = enc.encode(&out);
+            f.write_all(&encoded_out).await.unwrap();
             serv.done_balloon(id).await.unwrap();
         }
         exit_tx.send(()).unwrap();
