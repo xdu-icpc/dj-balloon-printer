@@ -3,10 +3,8 @@ use std::collections::VecDeque;
 
 pub struct DomJudgeRunner {
     cl: reqwest::Client,
-    cl_iface: reqwest::Client,
     buf: VecDeque<Balloon>,
     balloon_api: Url,
-    balloon_jury_iface: Url,
 }
 
 #[derive(Debug, Deserialize)]
@@ -37,51 +35,13 @@ impl DomJudgeRunner {
             .build()
             .map_err(Error::HttpError)?;
 
-        let cl_iface = reqwest::Client::builder()
-            .cookie_store(true)
-            .build()
-            .map_err(Error::HttpError)?;
-
-        let login = url.join("login").unwrap();
-        let body = cl_iface
-            .get(login.clone())
-            .send()
-            .await
-            .map_err(Error::HttpError)?
-            .text()
-            .await
-            .map_err(Error::HttpError)?;
-
-        use regex::Regex;
-        let re = Regex::new(r"name=._csrf_token.*value=.(.*).>").unwrap();
-        let cap = re.captures(&body);
-        let csrf = match cap.and_then(|x| x.get(1)) {
-            Some(csrf) => csrf,
-            None => return Err(Error::CsrfError),
-        };
-
-        let mut params = std::collections::HashMap::new();
-        params.insert("_csrf_token", csrf.as_str());
-        params.insert("_username", user.as_ref());
-        params.insert("_password", passwd.as_ref());
-
-        cl_iface
-            .post(login)
-            .form(&params)
-            .send()
-            .await
-            .map_err(Error::HttpError)?;
-
         let path = format!("api/v4/contests/{}/balloons", cid.as_ref());
         // Use `unwrap` because path can't contain invalid bytes.
         let balloon_api = url.join(&path).unwrap();
-        let balloon_jury_iface = url.join("jury/balloons/").unwrap();
 
         Ok(Self {
             cl,
-            cl_iface,
             balloon_api,
-            balloon_jury_iface,
             buf: VecDeque::new(),
         })
     }
@@ -105,12 +65,16 @@ impl DomJudgeRunner {
     }
 
     pub async fn done_balloon(&mut self, id: usize) -> Result<()> {
+        // Use `unwrap` because path can't contain invalid bytes.
         let url = self
-            .balloon_jury_iface
-            .join(&(id.to_string() + "/done"))
+            .balloon_api
+            .join(&id.to_string())
+            .unwrap()
+            .join("done")
             .unwrap();
-        self.cl_iface
-            .get(url)
+        self
+            .cl
+            .post(url)
             .send()
             .await
             .map_err(Error::HttpError)?;

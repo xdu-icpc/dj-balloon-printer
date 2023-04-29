@@ -2,12 +2,15 @@ mod dj;
 mod error;
 
 #[derive(Debug, Deserialize)]
+pub struct TotalValue {}
+
+#[derive(Debug, Deserialize)]
 pub struct Balloon {
     pub problem: String,
     pub team: String,
     pub location: Option<String>,
     pub color: String,
-    pub total: std::collections::HashMap<String, String>,
+    pub total: std::collections::HashMap<String, TotalValue>,
     pub awards: String,
     pub balloonid: usize,
 }
