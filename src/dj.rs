@@ -7,13 +7,6 @@ pub struct DomJudgeRunner {
     balloon_api: Url,
 }
 
-#[derive(Debug, Deserialize)]
-struct DomjudgeBalloon {
-    #[serde(flatten)]
-    b: Balloon,
-    done: bool,
-}
-
 impl DomJudgeRunner {
     pub async fn new<S0, S1, S2>(url: Url, cid: S0, user: S1, passwd: S2) -> Result<Self>
     where
@@ -35,7 +28,7 @@ impl DomJudgeRunner {
             .build()
             .map_err(Error::HttpError)?;
 
-        let path = format!("api/v4/contests/{}/balloons", cid.as_ref());
+        let path = format!("api/v4/contests/{}/balloons?todo=true", cid.as_ref());
         // Use `unwrap` because path can't contain invalid bytes.
         let balloon_api = url.join(&path).unwrap();
 
@@ -55,29 +48,23 @@ impl DomJudgeRunner {
                 .await
                 .map_err(Error::HttpError)?;
             let r = r
-                .json::<Vec<DomjudgeBalloon>>()
+                .json::<Vec<Balloon>>()
                 .await
                 .map_err(Error::HttpError)?;
-            self.buf
-                .extend(r.into_iter().filter(|x| !x.done).map(|x| x.b));
+            self.buf.extend(r);
         }
         Ok(self.buf.pop_front())
     }
 
     pub async fn done_balloon(&mut self, id: usize) -> Result<()> {
         // Use `unwrap` because path can't contain invalid bytes.
+        // Note that "balloons" is not a typo here: "a/b".join("c")
+        // gives "a/c", not "a/b/c".
         let url = self
             .balloon_api
-            .join(&id.to_string())
-            .unwrap()
-            .join("done")
+            .join(&format!("balloons/{}/done", id))
             .unwrap();
-        self
-            .cl
-            .post(url)
-            .send()
-            .await
-            .map_err(Error::HttpError)?;
+        self.cl.post(url).send().await.map_err(Error::HttpError)?;
         Ok(())
     }
 }
