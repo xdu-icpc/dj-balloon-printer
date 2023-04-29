@@ -2,14 +2,15 @@ mod dj;
 mod error;
 
 #[derive(Debug, Deserialize)]
-pub struct TotalValue {}
+pub struct TotalValue {
+    pub color: String,
+}
 
 #[derive(Debug, Deserialize)]
 pub struct Balloon {
     pub problem: String,
     pub team: String,
     pub location: Option<String>,
-    pub color: String,
     pub total: std::collections::HashMap<String, TotalValue>,
     pub awards: String,
     pub balloonid: usize,
@@ -31,12 +32,12 @@ impl From<Balloon> for BalloonOutput {
             problem,
             team,
             location,
-            color,
             total,
             awards,
             ..
         } = b;
         let location = location.unwrap_or_else(|| "unknown".to_owned());
+        let color = total.get(&problem).map_or("?", |x| &x.color).to_string();
         let total = total.into_keys().collect::<Vec<_>>().join(",");
         BalloonOutput {
             problem,
