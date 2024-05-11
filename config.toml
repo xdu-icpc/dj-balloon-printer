@@ -9,7 +9,7 @@ at \u001b\u0021\u0010\u001b\u000e{{location}}\u001b\u0021\u0000\u001b\u0014
 for \u001b\u0021\u0010\u001b\u000e{{problem}}\u001b\u0021\u0000\u001b\u0014
 (color: {{color}})
 {{awards}}
-in 2021-2022 Xidian University Programming Contest
+in 2024 Xidian University Programming Contest
 
 
 
@@ -17,7 +17,7 @@ in 2021-2022 Xidian University Programming Contest
 
 [domjudge]
 # The trailing "/" is necessary.
-url = "http://192.168.124.206/domjudge/"
+url = "http://192.168.124.233/domjudge/"
 contest_id = "demo"
 user = "balloonbot"
 password = "congratulate_grand_masters"

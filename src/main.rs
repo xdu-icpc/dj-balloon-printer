@@ -172,7 +172,7 @@ async fn main() {
         exit_tx.send(()).unwrap();
     });
 
-    let mut rl = rustyline::Editor::<()>::new();
+    let mut rl = rustyline::DefaultEditor::new().unwrap();
     let mut paused = false;
 
     loop {

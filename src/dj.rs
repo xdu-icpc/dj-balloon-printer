@@ -1,4 +1,5 @@
 pub use crate::prelude::*;
+use base64::prelude::*;
 use std::collections::VecDeque;
 
 pub struct DomJudgeRunner {
@@ -16,7 +17,7 @@ impl DomJudgeRunner {
     {
         use reqwest::header;
         let cred = user.as_ref().to_owned() + ":" + passwd.as_ref();
-        let auth = "Basic ".to_owned() + &base64::encode(cred.as_bytes());
+        let auth = "Basic ".to_owned() + &BASE64_STANDARD.encode(cred.as_bytes());
         // Use `unwrap` because base64 can't contain invalid bytes.
         let mut auth_value = header::HeaderValue::from_str(&auth).unwrap();
         auth_value.set_sensitive(true);
@@ -47,10 +48,7 @@ impl DomJudgeRunner {
                 .send()
                 .await
                 .map_err(Error::HttpError)?;
-            let r = r
-                .json::<Vec<Balloon>>()
-                .await
-                .map_err(Error::HttpError)?;
+            let r = r.json::<Vec<Balloon>>().await.map_err(Error::HttpError)?;
             self.buf.extend(r);
         }
         Ok(self.buf.pop_front())
