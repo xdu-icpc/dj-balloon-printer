@@ -64,6 +64,7 @@ struct Config {
     format: String,
     encoding: String,
     domjudge: DomJudge,
+    color: Option<std::collections::HashMap<String, String>>,
 }
 
 pub mod prelude {
@@ -161,7 +162,12 @@ async fn main() {
             }
             let b = b.unwrap();
             let id = b.balloonid;
-            let b: BalloonOutput = b.into();
+            let mut b: BalloonOutput = b.into();
+
+            if let Some(x) = config.color.as_ref().and_then(|x| x.get(&b.problem)) {
+                x.clone_into(&mut b.color);
+            }
+
             let tt = text_placeholder::Template::new(&config.format);
             let out = tt.fill_with_struct(&b).unwrap();
             use tokio::io::AsyncWriteExt;

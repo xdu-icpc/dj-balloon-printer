@@ -21,3 +21,6 @@ url = "http://192.168.124.233/domjudge/"
 contest_id = "demo"
 user = "balloonbot"
 password = "congratulate_grand_masters"
+
+[color]
+A = "淡紫色"
